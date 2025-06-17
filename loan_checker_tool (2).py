@@ -35,7 +35,7 @@ desired_features = [
     'person_age', 'person_gender', 'person_income', 'person_home_ownership',
     'loan_amnt', 'loan_int_rate', 'loan_percent_income',
     'Status of existing checking account', 'loan_intent',
-    'loan_grade', 'cb_person_default_on_file', 'cb_person_cred_hist_length'
+    'cb_person_cred_hist_length'
 ]
 target = 'loan_eligibility'
 
@@ -82,7 +82,6 @@ with st.expander("ℹ️ Help: What do these questions mean?"):
     - **Home Ownership**: Whether you rent or own your home.
     - **Loan Purpose**: Why you need the loan.
     - **Credit History Length**: How long you've had a credit profile (in years).
-    - **Default History**: Have you defaulted on any loan before?
     - **Percent of Income**: Automatically calculated — what portion of your income goes into this loan.
     """)
 
@@ -104,11 +103,9 @@ col3, col4 = st.columns(2)
 
 with col3:
     loan_intent = st.selectbox("Purpose of Loan", ['PERSONAL', 'EDUCATION', 'MEDICAL', 'VENTURE', 'HOMEIMPROVEMENT', 'DEBTCONSOLIDATION'])
-    loan_grade = st.selectbox("Loan Grade (Credit Rating)", ['A', 'B', 'C', 'D', 'E', 'F', 'G'])
 
 with col4:
     account_status = st.selectbox("Checking Account Status", ['good', 'bad'])
-    default_on_file = st.selectbox("Default History", ['Y', 'N'])
     credit_hist_length = st.slider("Credit History Length (Years)", 0, 30, 5)
 
 # --- PREDICTION ---
@@ -126,15 +123,11 @@ if st.button("💡 Check Loan Eligibility"):
         'loan_percent_income': loan_percent_income,
         'Status of existing checking account': account_status,
         'loan_intent': loan_intent,
-        'loan_grade': loan_grade,
-        'cb_person_default_on_file': default_on_file,
         'cb_person_cred_hist_length': credit_hist_length
     }
 
-    # Filter only used features
     input_data = {k: v for k, v in input_data.items() if k in features}
 
-    # Encode
     for col in input_data:
         if col in le_dict:
             input_data[col] = le_dict[col].transform([input_data[col]])[0]
